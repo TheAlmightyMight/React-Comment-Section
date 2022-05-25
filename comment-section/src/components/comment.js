@@ -1,8 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   addReply,
   deleteComment,
   updateCommentInfo,
+  sortComments,
+  increment,
+  decrement,
 } from "../slices/commentSlice";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
@@ -15,6 +18,9 @@ import {
   VoteBtn,
   InfoContainer,
   ContentContainer,
+  ContentContainerReply,
+  ReplyUpdateBtn,
+  ImageReply,
   Picture,
   UserName,
   DateInfo,
@@ -26,38 +32,6 @@ import {
   EditBtn,
   UserIdentifier,
 } from "../StyledComponents/styledComment";
-
-const ContentContainerReply = styled.div`
-  position: relative;
-  justify-content: end;
-  border-radius: 10px;
-  padding: 1em;
-  background-color: hsl(0, 0%, 100%);
-  margin: 20px 0 40px 0;
-  height: 150px;
-  width: 800px;
-  display: flex;
-`;
-
-const ImageReply = styled.img`
-  width: 50px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  position: absolute;
-  left: 30px;
-`;
-
-const ReplyUpdateBtn = styled.button`
-  width: 100px;
-  height: 50px;
-  margin: 0 20px 0 20px;
-  color: hsl(0, 0%, 100%);
-  font-size: 18px;
-  cursor: pointer;
-  font-weight: 500;
-  border-radius: 10px;
-  background-color: hsl(238, 40%, 52%);
-`;
 
 const ContentReply = styled.textarea`
   font-weight: 400;
@@ -95,24 +69,35 @@ function Comment({ el }) {
     setEditable((prev) => (prev = false));
     dispatch(updateCommentInfo({ content: content, id: el.id }));
   };
+  const replyHandler = () => {
+    dispatch(addReply({ id: el.id, content: content, name: username }));
+    setVisible((prev) => (prev = false));
+  };
+  useEffect(() => {
+    dispatch(sortComments());
+  }, [el.score]);
   return (
     <>
       <Container>
         <VotesContainer>
           <Votes>
-            <VoteBtn>
+            <VoteBtn
+              onClick={() => dispatch(increment({ id: el.id, amount: 1 }))}
+            >
               <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  d="M9.256 2.66c.204 0 .38-.056.53-.167.148-.11.222-.243.222-.396V.722c0-.152-.074-.284-.223-.395a.859.859 0 0 0-.53-.167H.76a.859.859 0 0 0-.53.167C.083.437.009.57.009.722v1.375c0 .153.074.285.223.396a.859.859 0 0 0 .53.167h8.495Z"
+                  d="M6.33 10.896c.137 0 .255-.05.354-.149.1-.1.149-.217.149-.354V7.004h3.315c.136 0 .254-.05.354-.149.099-.1.148-.217.148-.354V5.272a.483.483 0 0 0-.148-.354.483.483 0 0 0-.354-.149H6.833V1.4a.483.483 0 0 0-.149-.354.483.483 0 0 0-.354-.149H4.915a.483.483 0 0 0-.354.149c-.1.1-.149.217-.149.354v3.37H1.08a.483.483 0 0 0-.354.15c-.1.099-.149.217-.149.353v1.23c0 .136.05.254.149.353.1.1.217.149.354.149h3.333v3.39c0 .136.05.254.15.353.098.1.216.149.353.149H6.33Z"
                   fill="#C5C6EF"
                 />
               </svg>
             </VoteBtn>
             <VotesNumber>{el.score}</VotesNumber>
-            <VoteBtn>
+            <VoteBtn
+              onClick={() => dispatch(decrement({ id: el.id, amount: 1 }))}
+            >
               <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  d="M6.33 10.896c.137 0 .255-.05.354-.149.1-.1.149-.217.149-.354V7.004h3.315c.136 0 .254-.05.354-.149.099-.1.148-.217.148-.354V5.272a.483.483 0 0 0-.148-.354.483.483 0 0 0-.354-.149H6.833V1.4a.483.483 0 0 0-.149-.354.483.483 0 0 0-.354-.149H4.915a.483.483 0 0 0-.354.149c-.1.1-.149.217-.149.354v3.37H1.08a.483.483 0 0 0-.354.15c-.1.099-.149.217-.149.353v1.23c0 .136.05.254.149.353.1.1.217.149.354.149h3.333v3.39c0 .136.05.254.15.353.098.1.216.149.353.149H6.33Z"
+                  d="M9.256 2.66c.204 0 .38-.056.53-.167.148-.11.222-.243.222-.396V.722c0-.152-.074-.284-.223-.395a.859.859 0 0 0-.53-.167H.76a.859.859 0 0 0-.53.167C.083.437.009.57.009.722v1.375c0 .153.074.285.223.396a.859.859 0 0 0 .53.167h8.495Z"
                   fill="#C5C6EF"
                 />
               </svg>
@@ -163,26 +148,15 @@ function Comment({ el }) {
         {editable ? (
           <UpdateBtn onClick={() => updateComment()}>UPDATE</UpdateBtn>
         ) : null}
-        {/* {visible ? (
-          <UpdateBtn onClick={() => updateComment()}>REPLY</UpdateBtn>
-        ) : null} */}
       </Container>
       {visible ? (
         <ContentContainerReply>
           <ContentReply onChange={(e) => onChangeHandler(e)}></ContentReply>
           <ImageReply src={currentUser.image.png}></ImageReply>
-          <ReplyUpdateBtn
-            onClick={() =>
-              dispatch(
-                addReply({ id: el.id, content: content, name: username })
-              )
-            }
-          >
-            REPLY
-          </ReplyUpdateBtn>
+          <ReplyUpdateBtn onClick={() => replyHandler()}>REPLY</ReplyUpdateBtn>
         </ContentContainerReply>
       ) : null}
-      <RepliesContainer replies={el.replies} />
+      <RepliesContainer parentId={el.id} replies={el.replies} />
     </>
   );
 }

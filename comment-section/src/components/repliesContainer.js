@@ -1,13 +1,11 @@
 import React from "react";
 import Reply from "./reply";
-import { useSelector, useDispatch } from "react-redux";
-import styled from "styled-components";
 
-function RepliesContainer({ replies }) {
+function RepliesContainer({ replies, parentId }) {
   return (
     <>
       {replies.map((el) => {
-        return <Reply key={el.id} el={el} />;
+        return <Reply key={el.id} parentId={parentId} el={el} />;
       })}
     </>
   );

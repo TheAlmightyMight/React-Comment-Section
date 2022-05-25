@@ -73,6 +73,18 @@ export const commentSlice = createSlice({
         return el.id !== action.payload;
       });
     },
+    deleteReply: (state, action) => {
+      let arr = state.comments.map((el) => {
+        if (el.id === action.payload.parent) {
+          let newArr = el.replies.filter(
+            (el) => el.id !== action.payload.child
+          );
+          return { ...el, replies: newArr };
+        }
+        return el;
+      });
+      state.comments = arr;
+    },
     updateCommentInfo: (state, action) => {
       state.comments = state.comments.map((el) => {
         if (el.id === action.payload.id) {
@@ -98,7 +110,7 @@ export const commentSlice = createSlice({
                 content: action.payload.content,
                 createdAt: date.toLocaleDateString(),
                 score: 0,
-                replyingTo: action.payload.username,
+                replyingTo: action.payload.name,
                 user: {
                   image: {
                     png: state.currentUser.image.png,
@@ -111,48 +123,10 @@ export const commentSlice = createSlice({
         }
         return el;
       });
-      // state.comments = map;
       return {
         ...state,
         comments: map,
       };
-      // return (state.comments = state.comments.map((el) => {
-      //   if (el.id === action.payload.id) {
-      //     return {
-      //       ...el,
-      //       replies: [
-      //         ...el.replies,
-      //         {
-      //           id: Date.now(),
-      //           content: action.payload.content,
-      //           createdAt: date.toLocaleDateString(),
-      //           score: 0,
-      //           replyingTo: action.payload.username,
-      //           user: {
-      //             image: {
-      //               png: state.currentUser.image.png,
-      //             },
-      //             username: state.currentUser.username,
-      //           },
-      //         },
-      //       ],
-      //     };
-      //   }
-      //   return el;
-      // }));
-      // {
-      //   id: Date.now(),
-      //   content: action.payload.content,
-      //   createdAt: date.toLocaleDateString(),
-      //   score: 0,
-      //   replyingTo: action.payload.username,
-      //   user: {
-      //     image: {
-      //       png: state.currentUser.image.png,
-      //     },
-      //     username: state.currentUser.username,
-      //   },
-      // }
     },
     updateCommentDate: (state) => {
       state = {
@@ -160,6 +134,80 @@ export const commentSlice = createSlice({
         comments: state.comments.map((el) => {
           return { ...el, createdAt: Number(state.createdAt) - new Date() };
         }),
+      };
+    },
+    sortComments: (state) => {
+      let arr = state.comments.sort((a, b) => {
+        return b.score - a.score;
+      });
+      state.comments = arr;
+    },
+    increment: (state, action) => {
+      let arr = state.comments.map((el) => {
+        if (el.id === action.payload.id) {
+          return { ...el, score: el.score + action.payload.amount };
+        }
+        return el;
+      });
+      return {
+        ...state,
+        comments: arr,
+      };
+    },
+    decrement: (state, action) => {
+      let arr = state.comments.map((el) => {
+        if (el.id === action.payload.id) {
+          return { ...el, score: el.score - action.payload.amount };
+        }
+        return el;
+      });
+      return {
+        ...state,
+        comments: arr,
+      };
+    },
+    decrementReply: (state, action) => {
+      let item = state.comments.find((el) => el.id === action.payload.parent);
+      let itemArr = item.replies.map((el) => {
+        if (el.id === action.payload.child) {
+          return { ...el, score: el.score - action.payload.amount };
+        }
+        return el;
+      });
+      let arr = state.comments.map((el) => {
+        if (el.id === action.payload.parent) {
+          return {
+            ...el,
+            replies: itemArr,
+          };
+        }
+        return el;
+      });
+      return {
+        ...state,
+        comments: arr,
+      };
+    },
+    incrementReply: (state, action) => {
+      let item = state.comments.find((el) => el.id === action.payload.parent);
+      let itemArr = item.replies.map((el) => {
+        if (el.id === action.payload.child) {
+          return { ...el, score: el.score + action.payload.amount };
+        }
+        return el;
+      });
+      let arr = state.comments.map((el) => {
+        if (el.id === action.payload.parent) {
+          return {
+            ...el,
+            replies: itemArr,
+          };
+        }
+        return el;
+      });
+      return {
+        ...state,
+        comments: arr,
       };
     },
   },
@@ -180,6 +228,18 @@ export const commentSlice = createSlice({
   },
 });
 
-export const { addComment, deleteComment, updateCommentInfo, addReply } =
-  commentSlice.actions;
+// update reply content, styling, localStorage, votes for replies:
+
+export const {
+  addComment,
+  deleteComment,
+  updateCommentInfo,
+  addReply,
+  deleteReply,
+  sortComments,
+  increment,
+  decrement,
+  decrementReply,
+  incrementReply,
+} = commentSlice.actions;
 export default commentSlice.reducer;

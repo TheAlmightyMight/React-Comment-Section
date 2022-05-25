@@ -164,3 +164,35 @@ export const UpdateBtn = styled.button`
   border-radius: 10px;
   background-color: hsl(238, 40%, 52%);
 `;
+
+export const ContentContainerReply = styled.div`
+  position: relative;
+  justify-content: end;
+  border-radius: 10px;
+  padding: 1em;
+  background-color: hsl(0, 0%, 100%);
+  margin: 20px 0 40px 0;
+  height: 150px;
+  width: 800px;
+  display: flex;
+`;
+
+export const ImageReply = styled.img`
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: absolute;
+  left: 30px;
+`;
+
+export const ReplyUpdateBtn = styled.button`
+  width: 100px;
+  height: 50px;
+  margin: 0 20px 0 20px;
+  color: hsl(0, 0%, 100%);
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: 500;
+  border-radius: 10px;
+  background-color: hsl(238, 40%, 52%);
+`;
