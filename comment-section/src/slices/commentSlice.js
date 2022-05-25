@@ -13,19 +13,6 @@ const initialState = {
   error: false,
 };
 
-// const getDate = () => {
-//   let executed = false;
-//   return function () {
-//     if (executed === false) {
-//       executed = true;
-//       let d = Date.now();
-//       return d;
-//     }
-//   };
-// };
-// const diffInMs = new Date(endDate) - new Date(startDate);
-// const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
 export const fetchComments = createAsyncThunk(
   "comment/fetchComments",
   async (_, { rejectWithValue }) => {
@@ -228,7 +215,7 @@ export const commentSlice = createSlice({
   },
 });
 
-// update reply content, styling, localStorage, votes for replies:
+// update reply content, styling, localStorage
 
 export const {
   addComment,
