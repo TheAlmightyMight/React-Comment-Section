@@ -55,6 +55,7 @@ function Comment({ el }) {
   const dispatch = useDispatch();
   const [editable, setEditable] = useState(false);
   const [content, setContent] = useState(el.content);
+  const [contentPost, setContentPost] = useState(`${"@" + el.replyingTo}`);
   const [visible, setVisible] = useState(false);
   const changeVisbility = () => {
     setVisible(!visible);
@@ -65,12 +66,15 @@ function Comment({ el }) {
   const onChangeHandler = (e) => {
     setContent(e.target.value);
   };
+  const onChangeHandlerPost = (e) => {
+    setContentPost(e.target.value);
+  };
   const updateComment = (e) => {
     setEditable((prev) => (prev = false));
     dispatch(updateCommentInfo({ content: content, id: el.id }));
   };
   const replyHandler = () => {
-    dispatch(addReply({ id: el.id, content: content, name: username }));
+    dispatch(addReply({ id: el.id, content: contentPost, name: username }));
     setVisible((prev) => (prev = false));
   };
   useEffect(() => {
@@ -151,7 +155,7 @@ function Comment({ el }) {
       </Container>
       {visible ? (
         <ContentContainerReply>
-          <ContentReply onChange={(e) => onChangeHandler(e)}></ContentReply>
+          <ContentReply onChange={(e) => onChangeHandlerPost(e)}></ContentReply>
           <ImageReply src={currentUser.image.png}></ImageReply>
           <ReplyUpdateBtn onClick={() => replyHandler()}>REPLY</ReplyUpdateBtn>
         </ContentContainerReply>

@@ -86,7 +86,10 @@ function Reply({ el, parentId }) {
   const dispatch = useDispatch();
   const [editable, setEditable] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [content, setContent] = useState(el.content);
+  const [content, setContent] = useState(
+    `${"@" + el.replyingTo} ${el.content} `
+  );
+  const [contentPost, setContentPost] = useState(`${"@" + el.replyingTo}`);
   console.log(parentId);
   const changeVisbility = () => {
     setVisible(!visible);
@@ -97,12 +100,15 @@ function Reply({ el, parentId }) {
   const onChangeHandler = (e) => {
     setContent(e.target.value);
   };
+  const onChangeHandlerPost = (e) => {
+    setContentPost(e.target.value);
+  };
   const updateComment = () => {
     setEditable((prev) => (prev = false));
     dispatch(updateCommentInfo({ content: content, id: el.id }));
   };
   const replyHandler = () => {
-    dispatch(addReply({ id: parentId, content: content, name: username }));
+    dispatch(addReply({ id: parentId, content: contentPost, name: username }));
     setVisible((prev) => (prev = false));
   };
   return (
@@ -193,7 +199,7 @@ function Reply({ el, parentId }) {
       {visible ? (
         <ContentContainerReply>
           <ContentReplyToReply
-            onChange={(e) => onChangeHandler(e)}
+            onChange={(e) => onChangeHandlerPost(e)}
           ></ContentReplyToReply>
           <ImageReply src={currentUser.image.png}></ImageReply>
           <ReplyUpdateBtn onClick={() => replyHandler()}>REPLY</ReplyUpdateBtn>
