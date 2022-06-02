@@ -3,8 +3,8 @@
 <h2> Goals </h2>
 
 <ul>
-  <li> Making a layout as close to design as possible </li>
-  <li> Creating adding, editing, deleting, replying and other functionality to the app </li>
+  <li> Making a layout as close to design as possible. </li>
+  <li> Creating adding, editing, deleting, replying and other functionality to the app.</li>
   <li> Fetching local JSON data using built-in TollKit Async Thunk library to. </li>
 </ul>
 
